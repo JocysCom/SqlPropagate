@@ -1,6 +1,6 @@
 # Jocys.com SQL Propagate
 
-Execute SQL scripts on multiple SQL servers with one click of the button.
+Allows quick execution of multiple SQL scripts with paramters on multiple SQL servers.
 
 ## Screenshots
 
