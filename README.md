@@ -12,4 +12,6 @@ Program settings are automatically created with the same name as executable, but
 
 ### Main Program
 
+You can edit order (#) of execution, choose connections, parameters and scripts to use by simply checking or unchecking items.
+
 <img alt="Main From" src="SqlPropagate/Documents/Images/JocysComSqlPropagate.png" width="700" height="480">
