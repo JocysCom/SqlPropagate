@@ -19,7 +19,14 @@ You can edit order (#) of execution, choose connections, parameters and scripts 
 Note: Messages can be reported to the log panel by raising warnings:
 
 ```SQL
-SELECT @@VERSION
+USE [Database1]
+UPDATE Table1 SET Column1 = '$(MyParam1)'
+GO
+
+USE [Database2]
+UPDATE Table2 SET Column1 = '$(MyParam1)'
+GO
+
 DECLARE @error sysname = 'Test Message from Script 1. MyParam1 = ''$(MyParam1)'''
 RAISERROR(@error, -1, -1) WITH NOWAIT
 ```
