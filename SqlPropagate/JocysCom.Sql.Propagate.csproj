@@ -145,8 +145,6 @@
     <Compile Include="JocysCom\Configuration\AssemblyInfo.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsData.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsItem.cs" />
-    <Compile Include="JocysCom\Configuration\ProgressEventArgs.cs" />
-    <Compile Include="JocysCom\Configuration\ProgressStatus.cs" />
     <Compile Include="JocysCom\Configuration\SettingsData.cs" />
     <Compile Include="JocysCom\Configuration\SettingsHelper.cs" />
     <Compile Include="JocysCom\Configuration\SettingsParser.cs" />
@@ -158,6 +156,8 @@
     <Compile Include="JocysCom\Controls\MessageBoxWindow.xaml.cs">
       <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JocysCom\Controls\ProgressEventArgs.cs" />
+    <Compile Include="JocysCom\Controls\ProgressStatus.cs" />
     <Compile Include="JocysCom\Controls\TabIndexConverter.cs" />
     <Compile Include="JocysCom\Controls\Themes\Icons.xaml.cs">
       <DependentUpon>Icons.xaml</DependentUpon>
