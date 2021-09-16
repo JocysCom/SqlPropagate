@@ -26,14 +26,15 @@ Execution of 2 scripts with 1 parameter on 2 connections:
 Note: Messages can be reported to the log panel by raising warnings:
 
 ```SQL
-USE [Database1]
-UPDATE Table1 SET Column1 = '$(MyParam1)'
+USE [master]
 GO
 
-USE [Database2]
-UPDATE Table2 SET Column1 = '$(MyParam1)'
-GO
+DECLARE @error sysname
+SELECT @error = 'Server Language = ' + @@LANGUAGE
+RAISERROR(@error, -1, -1) WITH NOWAIT
 
-DECLARE @error sysname = 'Test Message from Script 1. MyParam1 = ''$(MyParam1)'''
+GO
+DECLARE @error sysname
+SELECT @error = 'Message from Script 1. MyParam1 = ''$(MyParam1)''.'
 RAISERROR(@error, -1, -1) WITH NOWAIT
 ```
