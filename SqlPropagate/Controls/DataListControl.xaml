@@ -108,15 +108,22 @@
 					<DataGridTextColumn
 						x:Name="OrderColumn"
 						Binding="{Binding Order}"
-						EditingElementStyle="{StaticResource TextBoxCell}"
-						ElementStyle="{StaticResource TextBlockCell}"
-						Header="#" />
+						EditingElementStyle="{StaticResource TextBoxCenterCell}"
+						ElementStyle="{StaticResource TextBlockCenterCell}"
+						Header="#">
+						<DataGridTextColumn.HeaderStyle>
+							<Style TargetType="DataGridColumnHeader">
+								<Setter Property="HorizontalContentAlignment" Value="Center" />
+							</Style>
+						</DataGridTextColumn.HeaderStyle>
+					</DataGridTextColumn>
 					<DataGridTemplateColumn x:Name="StatusCodeColumn" Width="SizeToCells" IsReadOnly="True">
 						<DataGridTemplateColumn.Header>
 							<ContentControl
 								x:Name="StatusCodeColumnContentControl"
 								Width="12"
 								Height="12"
+								HorizontalAlignment="Center"
 								VerticalAlignment="Center"
 								Content="{StaticResource Icon_InformationGrey}"
 								IsEnabled="False" />
