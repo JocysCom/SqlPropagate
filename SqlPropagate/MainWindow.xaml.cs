@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace JocysCom.Sql.Propagate
 {
@@ -41,12 +42,9 @@ namespace JocysCom.Sql.Propagate
 			InitializeComponent();
 			var assembly = Assembly.GetExecutingAssembly();
 			HMan = new BaseWithHeaderManager<int>(HelpHeadLabel, HelpBodyLabel, LeftIcon, RightIcon, this);
-			var product = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
-			var title = ((AssemblyTitleAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyTitleAttribute))).Title;
-			var description = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute))).Description;
-			HMan.SetBodyInfo(description);
-			HMan.SetHead(product);
-			Title = title;
+			var ai = new ClassLibrary.Configuration.AssemblyInfo();
+			Title = ai.GetTitle(true, false, true, false, false);
+			LoadHelpAndInfo(true);
 			// Initialize other things.
 			AddFileDialog = new OpenFileDialog();
 			ConnectionsPanel.SetDataItems(Global.AppSettings.Connections);
@@ -85,7 +83,7 @@ namespace JocysCom.Sql.Propagate
 			if (isOK)
 			{
 				Global.AppSettings.Connections.Add(newItem);
-				newItem.Order = Global.AppSettings.Parameters.IndexOf(newItem);
+				newItem.Order = Global.AppSettings.Connections.IndexOf(newItem);
 			}
 		}
 
@@ -157,19 +155,21 @@ namespace JocysCom.Sql.Propagate
 			dialog.Filter = "SQL Script (*.sql)|*.sql|All files (*.*)|*.*";
 			dialog.FilterIndex = 1;
 			dialog.RestoreDirectory = true;
+			var currentPath = new DirectoryInfo(".").FullName;
+			var initialDirectory = currentPath;
 			if (!string.IsNullOrEmpty(item?.Value))
 			{
 				var fi = new FileInfo(item?.Value);
 				if (string.IsNullOrEmpty(dialog.FileName))
 					dialog.FileName = System.IO.Path.GetFileNameWithoutExtension(fi.Name);
-				if (string.IsNullOrEmpty(dialog.InitialDirectory))
-					dialog.InitialDirectory = fi.Directory.FullName;
+				initialDirectory = fi.Directory.FullName;
 			}
+			if (string.IsNullOrEmpty(dialog.InitialDirectory))
+				dialog.InitialDirectory = initialDirectory;
 			dialog.Title = "Import Settings File";
 			var result = dialog.ShowDialog();
 			if (result != true)
 				return;
-			var currentPath = new DirectoryInfo(".").FullName;
 			foreach (var path in dialog.FileNames)
 			{
 				var newItem = new DataItem()
@@ -307,7 +307,7 @@ namespace JocysCom.Sql.Propagate
 					break;
 				case ProgressStatus.Completed:
 					var dm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Done.";
-					LogTextBox.Text += $"{dm}\r\n"; 
+					LogTextBox.Text += $"{dm}\r\n";
 					_TaskControl.UpdateProgress();
 					HMan.RemoveTask(TaskId);
 					break;
@@ -320,6 +320,65 @@ namespace JocysCom.Sql.Propagate
 		{
 			Global.AppData.Save();
 		}
+
+		void LoadHelpAndInfo(bool setLog = false)
+		{
+			// Set log.
+			if (setLog)
+				LogTextBox.Text = Global.AppSettings.LogsBodyText;
+			if (HMan == null)
+				return;
+			var assembly = Assembly.GetExecutingAssembly();
+			// Set Help Head text
+			var product = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
+			var helpHead = string.IsNullOrEmpty(Global.AppSettings.HelpHeadText)
+				? product
+				: Global.AppSettings.HelpHeadText;
+			HMan.SetHead(helpHead);
+			// Set Help Body text.
+			var description = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute))).Description;
+			var helpBody = string.IsNullOrEmpty(Global.AppSettings.HelpBodyText)
+				? description
+				: Global.AppSettings.HelpBodyText;
+			HMan.SetBodyInfo(helpBody);
+		}
+
+		public VerticalAlignment GetScrollVerticalAlignment(System.Windows.Controls.Primitives.TextBoxBase control)
+		{
+			// Vertical scroll position.
+			var offset = control.VerticalOffset;
+			// Vertical size of the scrollable content area.
+			var height = control.ViewportHeight;
+			// Vertical size of the visible content area.
+			var visibleView = control.ExtentHeight;
+			// Allow flexibility of 2 pixels.
+			var flex = 2;
+			if (offset + height - visibleView < flex)
+				return VerticalAlignment.Bottom;
+			if (offset < flex)
+				return VerticalAlignment.Top;
+			return VerticalAlignment.Center;
+		}
+
+		void AutoScroll(System.Windows.Controls.Primitives.TextBoxBase control)
+		{
+			var scrollPosition = GetScrollVerticalAlignment(control);
+			if (scrollPosition == VerticalAlignment.Bottom && control.IsVisible)
+				control.ScrollToEnd();
+		}
+
+		private void LogTextBox_TextChanged(object sender, TextChangedEventArgs e)
+			=> AutoScroll((TextBox)sender);
+
+		private void LogTextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+			=> AutoScroll((TextBox)sender);
+
+		private void HelpHeadEditTextBox_TextChanged(object sender, TextChangedEventArgs e)
+			=> LoadHelpAndInfo();
+
+		private void HelpBodyEditTextBox_TextChanged(object sender, TextChangedEventArgs e)
+			=> LoadHelpAndInfo();
+
 
 	}
 }

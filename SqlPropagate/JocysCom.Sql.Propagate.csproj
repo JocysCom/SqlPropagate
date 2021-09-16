@@ -142,12 +142,14 @@
     <Compile Include="JocysCom\ComponentModel\BindingListInvoked.cs" />
     <Compile Include="JocysCom\ComponentModel\PropertyComparer.cs" />
     <Compile Include="JocysCom\ComponentModel\SortableBindingList.cs" />
+    <Compile Include="JocysCom\Configuration\AssemblyInfo.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsData.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsItem.cs" />
     <Compile Include="JocysCom\Configuration\ProgressEventArgs.cs" />
     <Compile Include="JocysCom\Configuration\ProgressStatus.cs" />
     <Compile Include="JocysCom\Configuration\SettingsData.cs" />
     <Compile Include="JocysCom\Configuration\SettingsHelper.cs" />
+    <Compile Include="JocysCom\Configuration\SettingsParser.cs" />
     <Compile Include="JocysCom\Controls\BaseWithHeaderManager.cs" />
     <Compile Include="JocysCom\Controls\ControlsHelper.cs" />
     <Compile Include="JocysCom\Controls\ControlsHelper.WPF.cs" />
@@ -162,10 +164,13 @@
     </Compile>
     <Compile Include="JocysCom\Data\SqlHelper.cs" />
     <Compile Include="JocysCom\IO\PathHelper.cs" />
+    <Compile Include="JocysCom\Runtime\RuntimeHelper.cs" />
     <Compile Include="JocysCom\Runtime\Serializer.cs" />
+    <Compile Include="JocysCom\Text\Helper.cs" />
     <Compile Include="Resources\Icons\Icons_Default.xaml.cs">
       <DependentUpon>Icons_Default.xaml</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="Resources\BuildDate.txt" />
     <EmbeddedResource Include="Resources\Microsoft.SqlServer\Microsoft.SqlServer.BatchParserClient.dll" />
     <EmbeddedResource Include="Resources\Microsoft.SqlServer\Microsoft.SqlServer.SqlClrProvider.dll" />
     <EmbeddedResource Include="Resources\Microsoft.SqlServer\Microsoft.SqlServer.ConnectionInfo.dll" />
@@ -265,5 +270,9 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>DEL "$(TargetDir)*.config"</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>PowerShell.exe -Command "New-Item -ItemType Directory -Force -Path \"$(ProjectDir)Resources\" | Out-Null"
+PowerShell.exe -Command "(Get-Date).ToString(\"o\") | Out-File \"$(ProjectDir)Resources\BuildDate.txt\""</PreBuildEvent>
   </PropertyGroup>
 </Project>

@@ -79,7 +79,6 @@
 					<Grid Grid.Row="0">
 						<Grid.RowDefinitions>
 							<RowDefinition Height="*" />
-							<RowDefinition Height="1" />
 						</Grid.RowDefinitions>
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="25*" />
@@ -187,11 +186,6 @@
 							</GridSplitter.Template>
 						</GridSplitter>
 						<controls:DataListControl x:Name="ScriptsPanel" Grid.Column="4" DataType="Script" />
-						<StackPanel
-							Grid.Row="1"
-							Grid.Column="0"
-							Grid.ColumnSpan="5"
-							Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
 					</Grid>
 					<GridSplitter
 						Grid.Row="1"
@@ -235,14 +229,16 @@
 												Fill="LightGray" />
 										</Canvas>
 									</StackPanel>
+									<StackPanel Height="1" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
+									<StackPanel Height="1" VerticalAlignment="Bottom" Background="{DynamicResource {x:Static SystemColors.ActiveBorderBrushKey}}" />
 								</Grid>
 							</ControlTemplate>
 						</GridSplitter.Template>
 					</GridSplitter>
-
 					<TextBox
 						x:Name="LogTextBox"
 						Grid.Row="2"
+						Margin="0"
 						Padding="0"
 						VerticalAlignment="Stretch"
 						VerticalContentAlignment="Top"
@@ -250,8 +246,10 @@
 						BorderThickness="0"
 						FontFamily="Consolas"
 						IsReadOnly="True"
+						IsVisibleChanged="LogTextBox_IsVisibleChanged"
 						ScrollViewer.HorizontalScrollBarVisibility="Auto"
 						ScrollViewer.VerticalScrollBarVisibility="Auto"
+						TextChanged="LogTextBox_TextChanged"
 						TextWrapping="NoWrap" />
 				</Grid>
 			</TabItem>
@@ -284,6 +282,62 @@
 					ScrollViewer.HorizontalScrollBarVisibility="Visible"
 					ScrollViewer.VerticalScrollBarVisibility="Visible"
 					SelectionMode="Extended" />
+			</TabItem>
+			<TabItem Header="Options">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+					<Label
+						x:Name="HelpHeadEditLabel"
+						Grid.Row="0"
+						Grid.Column="0"
+						Content="Help Head Text" />
+					<TextBox
+						x:Name="HelpHeadEditTextBox"
+						Grid.Row="0"
+						Grid.Column="1"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Center"
+						VerticalContentAlignment="Top"
+						Text="{Binding HelpHeadText, Source={x:Static local:Global.AppSettings}, UpdateSourceTrigger=PropertyChanged}"
+						TextChanged="HelpHeadEditTextBox_TextChanged" />
+					<Label
+						x:Name="HelpBodyEditLabel"
+						Grid.Row="1"
+						Grid.Column="0"
+						Content="Help Body Text" />
+					<TextBox
+						x:Name="HelpBodyEditTextBox"
+						Grid.Row="1"
+						Grid.Column="1"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Center"
+						VerticalContentAlignment="Top"
+						MinLines="2"
+						Text="{Binding HelpBodyText, Source={x:Static local:Global.AppSettings}, UpdateSourceTrigger=PropertyChanged}"
+						TextChanged="HelpBodyEditTextBox_TextChanged" />
+					<Label
+						x:Name="LogsBodyEditLabel"
+						Grid.Row="2"
+						Grid.Column="0"
+						Content="Logs Body Text" />
+					<TextBox
+						x:Name="LogsBodyEditTextBox"
+						Grid.Row="2"
+						Grid.Column="1"
+						HorizontalAlignment="Stretch"
+						VerticalAlignment="Center"
+						VerticalContentAlignment="Top"
+						MinLines="4"
+						Text="{Binding LogsBodyText, Source={x:Static local:Global.AppSettings}, UpdateSourceTrigger=PropertyChanged}" />
+				</Grid>
 			</TabItem>
 		</TabControl>
 	</Grid>
