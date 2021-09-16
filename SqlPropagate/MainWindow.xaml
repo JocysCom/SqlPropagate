@@ -286,7 +286,7 @@
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
-						<RowDefinition Height="Auto" />
+						<RowDefinition Height="*" />
 					</Grid.RowDefinitions>
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="Auto" />
@@ -331,7 +331,7 @@
 						Grid.Row="2"
 						Grid.Column="1"
 						HorizontalAlignment="Stretch"
-						VerticalAlignment="Center"
+						VerticalAlignment="Stretch"
 						VerticalContentAlignment="Top"
 						MinLines="4"
 						Text="{Binding LogsBodyText, Source={x:Static local:Global.AppSettings}, UpdateSourceTrigger=PropertyChanged}" />

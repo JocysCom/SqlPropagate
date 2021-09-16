@@ -28,17 +28,7 @@ namespace JocysCom.Sql.Propagate
 				Global.AppData.Save();
 			}
 			if (Global.AppSettings.Parameters.Count == 0)
-			{
-				var newItem = new DataItem()
-				{
-					Name = "$(MyParam1)",
-					Value = "MyValue1",
-					IsChecked = true,
-					IsEnabled = true,
-				};
-				Global.AppSettings.Parameters.Add(newItem);
-				newItem.Order = Global.AppSettings.Parameters.IndexOf(newItem);
-			}
+				AddParameter("$(MyParam1)", "MyValue1");
 			InitializeComponent();
 			var assembly = Assembly.GetExecutingAssembly();
 			HMan = new BaseWithHeaderManager<int>(HelpHeadLabel, HelpBodyLabel, LeftIcon, RightIcon, this);
@@ -125,9 +115,18 @@ namespace JocysCom.Sql.Propagate
 
 		private void ParametersPanel_AddButton_Click(object sender, RoutedEventArgs e)
 		{
-			var item = new DataItem();
-			item.IsEnabled = true;
-			Global.AppSettings.Parameters.Add(item);
+			AddParameter();
+		}
+
+		void AddParameter(string name = "", string value = "", bool isChecked = false)
+		{
+			var newItem = new DataItem();
+			newItem.Name = name;
+			newItem.Value = value;
+			newItem.IsChecked = isChecked;
+			newItem.IsEnabled = true;
+			Global.AppSettings.Parameters.Add(newItem);
+			newItem.Order = Global.AppSettings.Parameters.IndexOf(newItem);
 		}
 
 		#endregion
@@ -234,8 +233,9 @@ namespace JocysCom.Sql.Propagate
 				}
 			}
 			var connectionsText = $"{connections.Count} connection" + (connections.Count > 1 ? "s" : "");
+			var parametersText = $"{parameters.Count} parameter" + (parameters.Count > 1 ? "s" : "");
 			var scriptsText = $"{scripts.Count} script" + (scripts.Count > 1 ? "s" : "");
-			var message = $"Execute {scriptsText} on {connectionsText}?";
+			var message = $"Execute {scriptsText} with {parametersText} on {connectionsText}?";
 			var result = form.ShowDialog(message, "Execute", MessageBoxButton.OKCancel, MessageBoxImage.Question);
 			if (result != MessageBoxResult.OK)
 				return;
