@@ -4,7 +4,7 @@ Allows quick execution of multiple SQL scripts with paramters on multiple SQL se
 
 # Download
 
-Digitally Signed Application v1.0.6.0 (2021-09-16)
+Digitally Signed Application v1.0.7.0 (2021-09-16)
 
 [Download - JocysCom.Sql.Propagate.zip](https://github.com/JocysCom/SqlPropagate/releases/download/1.0.0.0/JocysCom.Sql.Propagate.zip) - for All games
 
