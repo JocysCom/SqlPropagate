@@ -175,7 +175,7 @@ namespace JocysCom.Sql.Propagate
 				var newItem = new DataItem()
 				{
 					Name = System.IO.Path.GetFileName(path),
-					Value = JocysCom.ClassLibrary.IO.PathHelper.GetPathRelative(currentPath, path),
+					Value = JocysCom.ClassLibrary.IO.PathHelper.GetRelativePath(currentPath, path),
 					IsEnabled = true,
 				};
 				Global.AppSettings.Scripts.Add(newItem);
