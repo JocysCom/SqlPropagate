@@ -27,8 +27,13 @@ namespace JocysCom.Sql.Propagate
 				Global.AppData.Items.Add(new AppData());
 				Global.AppData.Save();
 			}
+			if (Global.AppSettings.Connections.Count == 0)
+				AddParameter(Global.AppSettings.Connections, "localhost", "Data Source=localhost;Integrated Security=True");
+
 			if (Global.AppSettings.Parameters.Count == 0)
-				AddParameter("$(MyParam1)", "MyValue1");
+				AddParameter(Global.AppSettings.Parameters, "$(MyParam1)", "MyValue1");
+
+
 			InitializeComponent();
 			var assembly = Assembly.GetExecutingAssembly();
 			HMan = new BaseWithHeaderManager<int>(HelpHeadLabel, HelpBodyLabel, LeftIcon, RightIcon, this);
@@ -119,18 +124,18 @@ namespace JocysCom.Sql.Propagate
 
 		private void ParametersPanel_AddButton_Click(object sender, RoutedEventArgs e)
 		{
-			AddParameter();
+			AddParameter(Global.AppSettings.Parameters);
 		}
 
-		void AddParameter(string name = "", string value = "", bool isChecked = false)
+		void AddParameter(IList<DataItem> list, string name = "", string value = "", bool isChecked = false)
 		{
 			var newItem = new DataItem();
 			newItem.Name = name;
 			newItem.Value = value;
 			newItem.IsChecked = isChecked;
 			newItem.IsEnabled = true;
-			Global.AppSettings.Parameters.Add(newItem);
-			newItem.Order = Global.AppSettings.Parameters.IndexOf(newItem);
+			list.Add(newItem);
+			newItem.Order = list.IndexOf(newItem);
 		}
 
 		#endregion
