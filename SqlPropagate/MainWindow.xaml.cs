@@ -58,10 +58,14 @@ namespace JocysCom.Sql.Propagate
 			var scriptItem = (DataItem)ScriptsPanel.MainDataGrid.SelectedItem;
 			if (scriptItem == null)
 				return;
-			var parameters = ParametersPanel.GetCheckedOrSelectedReferences(out bool containsChecked);
-			ScriptTextBox.Text = ScriptExecutor.ApplyParameters(scriptItem, parameters);
-			//ScriptTabItem.Visibility = Visibility.Visible;
-			Dispatcher.BeginInvoke((Action)(() => MainTabControl.SelectedIndex = 1));
+			var column = (e.Source as DataGrid)?.CurrentColumn;
+			if (column == ScriptsPanel.ValueColumn)
+			{
+				var parameters = ParametersPanel.GetCheckedOrSelectedReferences(out bool containsChecked);
+				ScriptTextBox.Text = ScriptExecutor.ApplyParameters(scriptItem, parameters);
+				//ScriptTabItem.Visibility = Visibility.Visible;
+				Dispatcher.BeginInvoke((Action)(() => MainTabControl.SelectedIndex = 1));
+			}
 		}
 
 		#region Connections Panel

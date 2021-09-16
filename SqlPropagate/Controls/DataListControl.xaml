@@ -158,6 +158,7 @@
 					<DataGridTextColumn
 						x:Name="ValueColumn"
 						Width="*"
+						x:FieldModifier="public"
 						Binding="{Binding Value}"
 						EditingElementStyle="{StaticResource TextBoxCell}"
 						ElementStyle="{StaticResource TextBlockCell}"
