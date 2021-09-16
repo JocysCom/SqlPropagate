@@ -1,6 +1,6 @@
 # Jocys.com SQL Propagate
 
-Allows quick execution of multiple SQL scripts with parameters on multiple SQL servers.
+Execute SQL scripts with parameters on multiple database servers. Tool is customisable and can be tailored to specific tasks. You can change title header, body and initial log panel text to provide help and instructions. 
 
 # Download
 

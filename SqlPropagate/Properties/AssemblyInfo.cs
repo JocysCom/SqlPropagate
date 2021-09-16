@@ -8,7 +8,7 @@ using System.Windows;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Jocys.com SQL Propagate")]
-[assembly: AssemblyDescription("Allows quick execution of multiple SQL scripts with parameters on multiple SQL servers.")]
+[assembly: AssemblyDescription("Execute SQL scripts with parameters on multiple database servers.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jocys.com")]
 [assembly: AssemblyProduct("SQL Propagate")]

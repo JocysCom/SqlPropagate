@@ -59,7 +59,8 @@ namespace JocysCom.Sql.Propagate
 			ScriptsPanel.EditButton.Click += ScriptsPanel_EditButton_Click;
 			ScriptsPanel.ExecuteButton.Click += ScriptPanel_ExecuteButton_Click;
 			ScriptsPanel.MainDataGrid.MouseDoubleClick += ScriptsPanel_MainDataGrid_MouseDoubleClick;
-			//ScriptsPanel.MainDataGrid.IsReadOnly = false;
+			ScriptsPanel.MainDataGrid.IsReadOnly = false;
+			ControlsHelper.EnableAutoScroll(LogTextBox);
 		}
 
 		private void ScriptsPanel_MainDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -342,36 +343,6 @@ namespace JocysCom.Sql.Propagate
 				: Global.AppSettings.HelpBodyText;
 			HMan.SetBodyInfo(helpBody);
 		}
-
-		public VerticalAlignment GetScrollVerticalAlignment(System.Windows.Controls.Primitives.TextBoxBase control)
-		{
-			// Vertical scroll position.
-			var offset = control.VerticalOffset;
-			// Vertical size of the scrollable content area.
-			var height = control.ViewportHeight;
-			// Vertical size of the visible content area.
-			var visibleView = control.ExtentHeight;
-			// Allow flexibility of 2 pixels.
-			var flex = 2;
-			if (offset + height - visibleView < flex)
-				return VerticalAlignment.Bottom;
-			if (offset < flex)
-				return VerticalAlignment.Top;
-			return VerticalAlignment.Center;
-		}
-
-		void AutoScroll(System.Windows.Controls.Primitives.TextBoxBase control)
-		{
-			var scrollPosition = GetScrollVerticalAlignment(control);
-			if (scrollPosition == VerticalAlignment.Bottom && control.IsVisible)
-				control.ScrollToEnd();
-		}
-
-		private void LogTextBox_TextChanged(object sender, TextChangedEventArgs e)
-			=> AutoScroll((TextBox)sender);
-
-		private void LogTextBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-			=> AutoScroll((TextBox)sender);
 
 		private void HelpHeadEditTextBox_TextChanged(object sender, TextChangedEventArgs e)
 			=> LoadHelpAndInfo();

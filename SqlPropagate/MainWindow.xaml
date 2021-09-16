@@ -246,10 +246,8 @@
 						BorderThickness="0"
 						FontFamily="Consolas"
 						IsReadOnly="True"
-						IsVisibleChanged="LogTextBox_IsVisibleChanged"
 						ScrollViewer.HorizontalScrollBarVisibility="Auto"
 						ScrollViewer.VerticalScrollBarVisibility="Auto"
-						TextChanged="LogTextBox_TextChanged"
 						TextWrapping="NoWrap" />
 				</Grid>
 			</TabItem>
