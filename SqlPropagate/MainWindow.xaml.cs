@@ -252,13 +252,13 @@ namespace JocysCom.Sql.Propagate
 				Parameters = parameters,
 				Scripts = scripts,
 			};
-			InfoPanel.HMan.AddTask(TaskId);
+			InfoPanel.AddTask(TaskId);
 			_TaskControl = ScriptsPanel;
 			var success = System.Threading.ThreadPool.QueueUserWorkItem(ExecuteTask, param);
 			if (!success)
 			{
 				_TaskControl.ScanProgressPanel.UpdateProgress("Task failed!", "", true);
-				InfoPanel.HMan.RemoveTask(TaskId);
+				InfoPanel.RemoveTask(TaskId);
 			}
 		}
 
@@ -316,7 +316,7 @@ namespace JocysCom.Sql.Propagate
 					var dm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Done.";
 					LogTextBox.Text += $"{dm}\r\n";
 					_TaskControl.ScanProgressPanel.UpdateProgress();
-					InfoPanel.HMan.RemoveTask(TaskId);
+					InfoPanel.RemoveTask(TaskId);
 					break;
 				default:
 					break;
@@ -333,21 +333,19 @@ namespace JocysCom.Sql.Propagate
 			// Set log.
 			if (setLog)
 				LogTextBox.Text = Global.AppSettings.LogsBodyText;
-			if (InfoPanel.HMan == null)
-				return;
 			var assembly = Assembly.GetExecutingAssembly();
 			// Set Help Head text
 			var product = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
 			var helpHead = string.IsNullOrEmpty(Global.AppSettings.HelpHeadText)
 				? product
 				: Global.AppSettings.HelpHeadText;
-			InfoPanel.HMan.SetHead(helpHead);
+			InfoPanel.SetHead(helpHead);
 			// Set Help Body text.
 			var description = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute))).Description;
 			var helpBody = string.IsNullOrEmpty(Global.AppSettings.HelpBodyText)
 				? description
 				: Global.AppSettings.HelpBodyText;
-			InfoPanel.HMan.SetBodyInfo(helpBody);
+			InfoPanel.SetBodyInfo(helpBody);
 		}
 
 		private void HelpHeadEditTextBox_TextChanged(object sender, TextChangedEventArgs e)
