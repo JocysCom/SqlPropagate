@@ -228,65 +228,6 @@ namespace JocysCom.Sql.Propagate.Controls
 				return;
 		}
 
-		public void UpdateProgress(ProgressEventArgs e)
-		{
-			if (e.TopCount > 0)
-			{
-				if (ProgressLevelTopBar.Maximum != e.TopCount)
-					ProgressLevelTopBar.Maximum = e.TopCount;
-				if (ProgressLevelTopBar.Value != e.TopIndex)
-					ProgressLevelTopBar.Value = e.TopIndex;
-
-			}
-			else
-			{
-				if (ProgressLevelTopBar.Maximum != 100)
-					ProgressLevelTopBar.Maximum = 100;
-				if (ProgressLevelTopBar.Value != 0)
-					ProgressLevelTopBar.Value = 0;
-
-			}
-			if (e.SubCount > 0)
-			{
-				if (ProgressLevelSubBar.Maximum != e.SubCount)
-					ProgressLevelSubBar.Maximum = e.SubCount;
-				if (ProgressLevelSubBar.Value != e.SubIndex)
-					ProgressLevelSubBar.Value = e.SubIndex;
-			}
-			else
-			{
-				if (ProgressLevelSubBar.Maximum != 100)
-					ProgressLevelSubBar.Maximum = 100;
-				if (ProgressLevelSubBar.Value != 0)
-					ProgressLevelSubBar.Value = 0;
-			}
-			// Create top message.
-			var tm = "";
-			if (e.TopCount > 0)
-				tm += $"{e.TopIndex}/{e.TopCount} - ";
-			tm += $"{e.TopMessage}";
-			// Create sub message.
-			var sm = "";
-			if (e.SubCount > 0)
-				sm += $"{e.SubIndex}/{e.SubCount} - ";
-			sm += $"{e.SubMessage}";
-			UpdateProgress(tm, sm);
-		}
-
-		public void UpdateProgress(string topText = "", string SubText = "", bool? resetBars = null)
-		{
-			ControlsHelper.SetText(ProgressLevelTopLabel, topText);
-			ControlsHelper.SetText(ProgressLevelSubLabel, SubText);
-			if (resetBars.GetValueOrDefault())
-			{
-				ProgressLevelTopBar.Maximum = 100;
-				ProgressLevelTopBar.Value = 0;
-				ProgressLevelSubBar.Maximum = 100;
-				ProgressLevelSubBar.Value = 0;
-			}
-			ControlsHelper.SetVisible(ScanProgressPanel, !string.IsNullOrEmpty(topText));
-		}
-
 		public List<DataItem> GetCheckedOrSelectedReferences(out bool containsChecked)
 		{
 			containsChecked = DataItems.Any(x => x.IsChecked);
@@ -302,7 +243,6 @@ namespace JocysCom.Sql.Propagate.Controls
 			foreach (var item in items)
 				DataItems.Remove(item);
 			Reorder();
-
 		}
 
 		public void Reorder()

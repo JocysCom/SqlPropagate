@@ -36,7 +36,6 @@ namespace JocysCom.Sql.Propagate
 
 			InitializeComponent();
 			var assembly = Assembly.GetExecutingAssembly();
-			HMan = new BaseWithHeaderManager<int>(HelpHeadLabel, HelpBodyLabel, LeftIcon, RightIcon, this);
 			var ai = new ClassLibrary.Configuration.AssemblyInfo();
 			Title = ai.GetTitle(true, false, true, false, false);
 			LoadHelpAndInfo(true);
@@ -194,8 +193,6 @@ namespace JocysCom.Sql.Propagate
 
 		#endregion
 
-		public BaseWithHeaderManager<int> HMan;
-
 		private void ScriptPanel_ExecuteButton_Click(object sender, RoutedEventArgs e)
 		{
 			Execute();
@@ -255,13 +252,13 @@ namespace JocysCom.Sql.Propagate
 				Parameters = parameters,
 				Scripts = scripts,
 			};
-			HMan.AddTask(TaskId);
+			InfoPanel.HMan.AddTask(TaskId);
 			_TaskControl = ScriptsPanel;
 			var success = System.Threading.ThreadPool.QueueUserWorkItem(ExecuteTask, param);
 			if (!success)
 			{
-				_TaskControl.UpdateProgress("Task failed!", "", true);
-				HMan.RemoveTask(TaskId);
+				_TaskControl.ScanProgressPanel.UpdateProgress("Task failed!", "", true);
+				InfoPanel.HMan.RemoveTask(TaskId);
 			}
 		}
 
@@ -272,7 +269,7 @@ namespace JocysCom.Sql.Propagate
 		{
 			ControlsHelper.Invoke(() =>
 			{
-				_TaskControl.UpdateProgress("Starting...", "", true);
+				_TaskControl.ScanProgressPanel.UpdateProgress("Starting...", "", true);
 			});
 			_ScriptExecutor = new ScriptExecutor();
 			_ScriptExecutor.Progress += _ScriptExecutor_Progress;
@@ -304,11 +301,11 @@ namespace JocysCom.Sql.Propagate
 			{
 				case ProgressStatus.Started:
 					var sm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Started...";
-					_TaskControl.UpdateProgress(sm, "");
+					_TaskControl.ScanProgressPanel.UpdateProgress(sm, "");
 					LogTextBox.Text += $"{sm}\r\n";
 					break;
 				case ProgressStatus.Updated:
-					_TaskControl.UpdateProgress(e);
+					_TaskControl.ScanProgressPanel.UpdateProgress(e);
 					if (!string.IsNullOrEmpty(e.SubMessage))
 						LogTextBox.Text += $"{e.TopMessage} \\ {e.SubMessage}\r\n";
 					break;
@@ -318,8 +315,8 @@ namespace JocysCom.Sql.Propagate
 				case ProgressStatus.Completed:
 					var dm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Done.";
 					LogTextBox.Text += $"{dm}\r\n";
-					_TaskControl.UpdateProgress();
-					HMan.RemoveTask(TaskId);
+					_TaskControl.ScanProgressPanel.UpdateProgress();
+					InfoPanel.HMan.RemoveTask(TaskId);
 					break;
 				default:
 					break;
@@ -336,7 +333,7 @@ namespace JocysCom.Sql.Propagate
 			// Set log.
 			if (setLog)
 				LogTextBox.Text = Global.AppSettings.LogsBodyText;
-			if (HMan == null)
+			if (InfoPanel.HMan == null)
 				return;
 			var assembly = Assembly.GetExecutingAssembly();
 			// Set Help Head text
@@ -344,13 +341,13 @@ namespace JocysCom.Sql.Propagate
 			var helpHead = string.IsNullOrEmpty(Global.AppSettings.HelpHeadText)
 				? product
 				: Global.AppSettings.HelpHeadText;
-			HMan.SetHead(helpHead);
+			InfoPanel.HMan.SetHead(helpHead);
 			// Set Help Body text.
 			var description = ((AssemblyDescriptionAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyDescriptionAttribute))).Description;
 			var helpBody = string.IsNullOrEmpty(Global.AppSettings.HelpBodyText)
 				? description
 				: Global.AppSettings.HelpBodyText;
-			HMan.SetBodyInfo(helpBody);
+			InfoPanel.HMan.SetBodyInfo(helpBody);
 		}
 
 		private void HelpHeadEditTextBox_TextChanged(object sender, TextChangedEventArgs e)

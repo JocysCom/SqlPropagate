@@ -152,9 +152,15 @@
     <Compile Include="JocysCom\Controls\ControlsHelper.cs" />
     <Compile Include="JocysCom\Controls\ControlsHelper.WPF.cs" />
     <Compile Include="JocysCom\Controls\IBaseWithHeaderControl.cs" />
+    <Compile Include="JocysCom\Controls\InfoControl.xaml.cs">
+      <DependentUpon>InfoControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="JocysCom\Controls\ItemFormattingConverter.cs" />
     <Compile Include="JocysCom\Controls\MessageBoxWindow.xaml.cs">
       <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="JocysCom\Controls\ProgressBarControl.xaml.cs">
+      <DependentUpon>ProgressBarControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="JocysCom\Controls\ProgressEventArgs.cs" />
     <Compile Include="JocysCom\Controls\ProgressStatus.cs" />
@@ -189,7 +195,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="JocysCom\Controls\InfoControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="JocysCom\Controls\MessageBoxWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="JocysCom\Controls\ProgressBarControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

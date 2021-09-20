@@ -2,6 +2,7 @@
 	x:Class="JocysCom.Sql.Propagate.MainWindow"
 	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:JcControls="clr-namespace:JocysCom.ClassLibrary.Controls"
 	xmlns:controls="clr-namespace:JocysCom.Sql.Propagate.Controls"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="clr-namespace:JocysCom.Sql.Propagate"
@@ -17,57 +18,7 @@
 			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
-		<Grid Grid.Row="0" Background="{DynamicResource {x:Static SystemColors.InfoBrushKey}}">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="Auto" />
-				<RowDefinition Height="*" />
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="Auto" />
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<Label
-				Name="HelpHeadLabel"
-				Grid.Row="0"
-				Grid.Column="0"
-				Grid.ColumnSpan="2"
-				Margin="8,3,3,3"
-				Padding="0"
-				Content="[HelpHeadLabel]"
-				FontWeight="Bold" />
-			<ContentControl
-				Name="LeftIcon"
-				Grid.Row="1"
-				Grid.Column="0"
-				Width="24"
-				Height="24"
-				Margin="8,0,3,3"
-				Padding="0"
-				Content="{StaticResource Icon_Information}"
-				Style="{StaticResource ButtonContentControl}" />
-			<TextBlock
-				Name="HelpBodyLabel"
-				Grid.Row="1"
-				Grid.Column="1"
-				Margin="3,0,3,3"
-				Padding="0"
-				VerticalAlignment="Top"
-				Text="[HelpBodyLabel]"
-				TextWrapping="Wrap" />
-			<ContentControl
-				Name="RightIcon"
-				Grid.Row="0"
-				Grid.RowSpan="2"
-				Grid.Column="2"
-				Width="48"
-				Height="48"
-				Margin="4,4,8,4"
-				Padding="0"
-				Content="{StaticResource Icon_data_scroll}"
-				Style="{StaticResource ButtonContentControl}" />
-		</Grid>
+		<JcControls:InfoControl x:Name="InfoPanel" Grid.Row="0" RightIconContent="{StaticResource Icon_data_scroll}" />
 		<TabControl x:Name="MainTabControl" Grid.Row="1" Margin="3,3,3,3">
 			<TabItem Header="Main">
 				<Grid>
