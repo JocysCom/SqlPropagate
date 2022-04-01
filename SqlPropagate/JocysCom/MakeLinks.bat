@@ -40,6 +40,7 @@ IF EXIST "D:\Projects\Jocys.com\Class Library" SET upr=D:\Projects\Jocys.com\Cla
 CALL:MKJ ComponentModel
 CALL:MKJ Configuration
 CALL:MKJ Controls
+CALL:MKJ Common
 CALL:MKJ Data
 CALL:MKJ IO
 CALL:MKJ Runtime

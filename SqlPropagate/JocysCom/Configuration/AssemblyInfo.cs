@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -36,11 +37,34 @@ namespace JocysCom.ClassLibrary.Configuration
 
 		public static string ExpandPath(string path)
 		{
+			// Variables are quoted with '%' (percent) sign.
 			path = Environment.ExpandEnvironmentVariables(path);
+			// Variables are quoted with '{' and '}' sign.
 			path = JocysCom.ClassLibrary.Text.Helper.Replace(path, Entry, false);
 			return path;
 		}
 
+		public static string ParameterizePath(string path)
+		{
+			// Variables are quoted with '{' and '}' sign.
+			path = JocysCom.ClassLibrary.Text.Helper.Replace(Entry, path, false);
+			return path;
+		}
+
+		//public static string GetExpandedPath(string path)
+		//{
+		//	path = ExpandPath(path);
+		//	path = IO.PathHelper.ConvertFromSpecialFoldersPattern(path, "{", "}");
+		//	return path;
+		//}
+
+		//public static string GetParametrizedPath(string path)
+		//{
+		//	path = IO.PathHelper.ConvertToSpecialFoldersPattern(path, "{", "}");
+		//	path = ParameterizePath(path);
+		//	return path;
+		//}
+		
 		public AssemblyInfo(string strValFile)
 		{
 			Assembly = Assembly.LoadFile(strValFile);
@@ -154,7 +178,7 @@ namespace JocysCom.ClassLibrary.Configuration
 					default: break;                // General Availability (GA) - Gold
 				}
 			}
-			
+
 			var haveRunMode = !string.IsNullOrEmpty(RunMode);
 			// If run mode is not specified then assume live.
 			var nonLive = haveRunMode && string.Compare(RunMode, "LIVE", true) != 0;
@@ -364,9 +388,11 @@ namespace JocysCom.ClassLibrary.Configuration
 		{
 			get
 			{
-				string codeBase = Assembly.Location;
-				UriBuilder uri = new UriBuilder(codeBase);
-				string path = Uri.UnescapeDataString(uri.Path);
+				var codeBase = Assembly.Location;
+				if (string.IsNullOrEmpty(codeBase))
+					return codeBase;
+				var uri = new UriBuilder(codeBase);
+				var path = Uri.UnescapeDataString(uri.Path);
 				return path;
 			}
 		}
@@ -395,7 +421,9 @@ namespace JocysCom.ClassLibrary.Configuration
 				: value.Invoke(attribute);
 		}
 
-		public string GetAppDataPath(bool userLevel, string format, params object[] args)
+
+
+		public string GetAppDataPath(bool userLevel = false, string format = "", params object[] args)
 		{
 			// Get writable application folder.
 			var specialFolder = userLevel
@@ -411,7 +439,7 @@ namespace JocysCom.ClassLibrary.Configuration
 			return path;
 		}
 
-		public FileInfo GetAppDataFile(bool userLevel, string format, params object[] args)
+		public FileInfo GetAppDataFile(bool userLevel = false, string format = "", params object[] args)
 		{
 			var path = GetAppDataPath(userLevel, format, args);
 			return new FileInfo(path);

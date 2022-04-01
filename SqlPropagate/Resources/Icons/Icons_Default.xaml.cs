@@ -12,7 +12,10 @@ namespace JocysCom.Sql.Propagate
 		public static Icons_Default Current => _Current = _Current ?? new Icons_Default();
 		private static Icons_Default _Current;
 
+		public const string Icon_data = nameof(Icon_data);
 		public const string Icon_data_scroll = nameof(Icon_data_scroll);
+		public const string Icon_gearwheel = nameof(Icon_gearwheel);
+		public const string Icon_scroll = nameof(Icon_scroll);
 
 	}
 }

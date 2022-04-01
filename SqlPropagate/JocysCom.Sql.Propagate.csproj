@@ -14,6 +14,7 @@
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,7 +27,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -139,9 +139,11 @@
     <Compile Include="Controls\DataListControl.xaml.cs">
       <DependentUpon>DataListControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JocysCom\Common\Helper.cs" />
     <Compile Include="JocysCom\ComponentModel\BindingListInvoked.cs" />
     <Compile Include="JocysCom\ComponentModel\PropertyComparer.cs" />
     <Compile Include="JocysCom\ComponentModel\SortableBindingList.cs" />
+    <Compile Include="JocysCom\Configuration\Arguments.cs" />
     <Compile Include="JocysCom\Configuration\AssemblyInfo.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsData.cs" />
     <Compile Include="JocysCom\Configuration\ISettingsItem.cs" />
@@ -153,6 +155,7 @@
     <Compile Include="JocysCom\Controls\InfoControl.xaml.cs">
       <DependentUpon>InfoControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="JocysCom\Controls\InitHelper.cs" />
     <Compile Include="JocysCom\Controls\ItemFormattingConverter.cs" />
     <Compile Include="JocysCom\Controls\MessageBoxWindow.xaml.cs">
       <DependentUpon>MessageBoxWindow.xaml</DependentUpon>
@@ -167,6 +170,7 @@
       <DependentUpon>Icons.xaml</DependentUpon>
     </Compile>
     <Compile Include="JocysCom\Data\SqlHelper.cs" />
+    <Compile Include="JocysCom\Data\SqlHelper.Types.cs" />
     <Compile Include="JocysCom\IO\PathHelper.cs" />
     <Compile Include="JocysCom\Runtime\RuntimeHelper.cs" />
     <Compile Include="JocysCom\Runtime\Serializer.cs" />
@@ -258,6 +262,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="Documents\Help.rtf" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

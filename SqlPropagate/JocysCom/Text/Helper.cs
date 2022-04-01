@@ -54,6 +54,29 @@ namespace JocysCom.ClassLibrary.Text
 			return s;
 		}
 
+		public static string Replace<T>(T o, string s, bool usePrefix = true, string customPrefix = null)
+		{
+			if (string.IsNullOrEmpty(s))
+				return s;
+			if (o == null)
+				return s;
+			var t = typeof(T);
+			var properties = t.GetProperties();
+			var prefix = string.IsNullOrEmpty(customPrefix) ? t.Name : customPrefix;
+			foreach (var p in properties)
+			{
+				var value = $"{p.GetValue(o, null)}";
+				if (string.IsNullOrEmpty(value))
+					continue;
+				var text = "{";
+				if (usePrefix && !string.IsNullOrEmpty(prefix))
+					text += prefix;
+				text += p.Name + "}";
+				s = Replace(s, value, text, StringComparison.OrdinalIgnoreCase);
+			}
+			return s;
+		}
+
 		/// <summary>Case insensitive replace.</summary>
 		public static string Replace(string s, string oldValue, string newValue, StringComparison comparison)
 		{

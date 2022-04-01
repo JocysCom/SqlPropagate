@@ -1,4 +1,5 @@
-﻿using JocysCom.ClassLibrary.Controls;
+﻿using JocysCom.ClassLibrary.Configuration;
+using JocysCom.ClassLibrary.Controls;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -14,9 +15,14 @@ namespace JocysCom.Sql.Propagate
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+
+		int AutoDelay;
+
 		public MainWindow()
 		{
 			ControlsHelper.InitInvokeContext();
+			_Arguments = new Arguments(Environment.GetCommandLineArgs());
+			AutoDelay = _Arguments.GetValue("AutoDelay", false, 500);
 			// Use configuration from local folder.
 			var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
 			var baseName = System.IO.Path.GetFileNameWithoutExtension(exeName);
@@ -32,8 +38,13 @@ namespace JocysCom.Sql.Propagate
 
 			if (Global.AppSettings.Parameters.Count == 0)
 				AddParameter(Global.AppSettings.Parameters, "$(MyParam1)", "MyValue1");
-
-
+			// Load parameters.
+			foreach (var item in Global.AppSettings.Parameters)
+			{
+				var key = item.Name.Replace("$(", "").Replace(")", "");
+				if (_Arguments.ContainsKey(key))
+					item.Value = _Arguments.GetValue(key);
+			}
 			InitializeComponent();
 			var assembly = Assembly.GetExecutingAssembly();
 			var ai = new ClassLibrary.Configuration.AssemblyInfo();
@@ -57,8 +68,11 @@ namespace JocysCom.Sql.Propagate
 			ControlsHelper.EnableAutoScroll(LogTextBox);
 		}
 
+		Arguments _Arguments;
+
 		private void ScriptsPanel_MainDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
+			ScriptTabItem.Visibility = Visibility.Visible;
 			var scriptItem = (DataItem)ScriptsPanel.MainDataGrid.SelectedItem;
 			if (scriptItem == null)
 				return;
@@ -200,7 +214,7 @@ namespace JocysCom.Sql.Propagate
 
 		Controls.DataListControl _TaskControl;
 
-		void Execute()
+		void Execute(bool skipConfirmation = false)
 		{
 			List<DataItem> scripts = null;
 			List<DataItem> connections = null;
@@ -238,13 +252,16 @@ namespace JocysCom.Sql.Propagate
 					return;
 				}
 			}
-			var connectionsText = $"{connections.Count} connection" + (connections.Count > 1 ? "s" : "");
-			var parametersText = $"{parameters.Count} parameter" + (parameters.Count > 1 ? "s" : "");
-			var scriptsText = $"{scripts.Count} script" + (scripts.Count > 1 ? "s" : "");
-			var message = $"Execute {scriptsText} with {parametersText} on {connectionsText}?";
-			var result = form.ShowDialog(message, "Execute", MessageBoxButton.OKCancel, MessageBoxImage.Question);
-			if (result != MessageBoxResult.OK)
-				return;
+			if (!skipConfirmation)
+			{
+				var connectionsText = $"{connections.Count} connection" + (connections.Count > 1 ? "s" : "");
+				var parametersText = $"{parameters.Count} parameter" + (parameters.Count > 1 ? "s" : "");
+				var scriptsText = $"{scripts.Count} script" + (scripts.Count > 1 ? "s" : "");
+				var message = $"Execute {scriptsText} with {parametersText} on {connectionsText}?";
+				var result = form.ShowDialog(message, "Execute", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+				if (result != MessageBoxResult.OK)
+					return;
+			}
 			LogTextBox.Text = "";
 			var param = new ScriptExecutorParam()
 			{
@@ -317,6 +334,11 @@ namespace JocysCom.Sql.Propagate
 					LogTextBox.Text += $"{dm}\r\n";
 					_TaskControl.ScanProgressPanel.UpdateProgress();
 					InfoPanel.RemoveTask(TaskId);
+					if (_Arguments.ContainsKey("AutoClose"))
+						ControlsHelper.BeginInvoke(() =>
+						{
+							System.Windows.Application.Current.Shutdown();
+						}, AutoDelay);
 					break;
 				default:
 					break;
@@ -354,6 +376,17 @@ namespace JocysCom.Sql.Propagate
 		private void HelpBodyEditTextBox_TextChanged(object sender, TextChangedEventArgs e)
 			=> LoadHelpAndInfo();
 
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			var bytes = JocysCom.ClassLibrary.Helper.FindResource<byte[]>("Documents.Help.rtf");
+			ControlsHelper.SetTextFromResource(HelpRichTextBox, bytes);
 
+			if (_Arguments.ContainsKey("AutoExecute"))
+				ControlsHelper.BeginInvoke(() =>
+				{
+					Execute(true);
+				}, AutoDelay);
+
+		}
 	}
 }

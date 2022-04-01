@@ -12,6 +12,7 @@
 	Height="480"
 	Closed="Window_Closed"
 	Icon="App.ico"
+	Loaded="Window_Loaded"
 	mc:Ignorable="d">
 	<Grid>
 		<Grid.RowDefinitions>
@@ -20,7 +21,17 @@
 		</Grid.RowDefinitions>
 		<JcControls:InfoControl x:Name="InfoPanel" Grid.Row="0" RightIconContent="{StaticResource Icon_data_scroll}" />
 		<TabControl x:Name="MainTabControl" Grid.Row="1" Margin="3,3,3,3">
-			<TabItem Header="Main">
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<ContentControl
+							Width="12"
+							Height="12"
+							VerticalAlignment="Center"
+							Content="{StaticResource Icon_data}" />
+						<Label Padding="4,0,0,0" VerticalAlignment="Center" Content="Main" />
+					</StackPanel>
+				</TabItem.Header>
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="40*" />
@@ -61,7 +72,18 @@
 						TextWrapping="NoWrap" />
 				</Grid>
 			</TabItem>
-			<TabItem x:Name="ScriptTabItem" Header="Script">
+			<TabItem x:Name="ScriptTabItem" Visibility="Collapsed">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<ContentControl
+							Width="12"
+							Height="12"
+							VerticalAlignment="Center"
+							Content="{StaticResource Icon_scroll}" />
+						<Label Padding="4,0,0,0" VerticalAlignment="Center" Content="Script" />
+					</StackPanel>
+				</TabItem.Header>
+
 				<TextBox
 					x:Name="ScriptTextBox"
 					Margin="0"
@@ -91,7 +113,17 @@
 					ScrollViewer.VerticalScrollBarVisibility="Visible"
 					SelectionMode="Extended" />
 			</TabItem>
-			<TabItem Header="Options">
+			<TabItem>
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<ContentControl
+							Width="12"
+							Height="12"
+							VerticalAlignment="Center"
+							Content="{StaticResource Icon_gearwheel}" />
+						<Label Padding="4,0,0,0" VerticalAlignment="Center" Content="Options" />
+					</StackPanel>
+				</TabItem.Header>
 				<Grid>
 					<Grid.RowDefinitions>
 						<RowDefinition Height="Auto" />
@@ -146,6 +178,19 @@
 						MinLines="4"
 						Text="{Binding LogsBodyText, Source={x:Static local:Global.AppSettings}, UpdateSourceTrigger=PropertyChanged}" />
 				</Grid>
+			</TabItem>
+			<TabItem x:Name="HelpTabItem">
+				<TabItem.Header>
+					<StackPanel Orientation="Horizontal">
+						<ContentControl
+							Width="12"
+							Height="12"
+							VerticalAlignment="Center"
+							Content="{StaticResource Icon_Question}" />
+						<Label Padding="4,0,0,0" VerticalAlignment="Center" Content="Help" />
+					</StackPanel>
+				</TabItem.Header>
+				<RichTextBox x:Name="HelpRichTextBox" BorderThickness="0" />
 			</TabItem>
 		</TabControl>
 	</Grid>
