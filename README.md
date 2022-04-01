@@ -4,7 +4,7 @@ Execute SQL scripts with parameters on multiple database server connections. Too
 
 # Download
 
-Digitally Signed Application v1.0.8.0 (2021-09-16)
+Digitally Signed Application v1.0.9.0 (2022-04-01)
 
 [Download - JocysCom.Sql.Propagate.zip](https://github.com/JocysCom/SqlPropagate/releases/download/1.0.0.0/JocysCom.Sql.Propagate.zip)
 
