@@ -1,14 +1,15 @@
 ﻿using JocysCom.ClassLibrary.ComponentModel;
+using JocysCom.ClassLibrary.Configuration;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace JocysCom.Sql.Propagate
 {
-	public class AppData : JocysCom.ClassLibrary.Configuration.ISettingsItem, INotifyPropertyChanged
+	public class AppData : SettingsItem, INotifyPropertyChanged
 	{
 		public bool Enabled { get; set; }
 
-		public bool IsEmpty =>
+		public override bool IsEmpty =>
 			(Connections?.Count ?? 0) == 0 &&
 			(Parameters?.Count ?? 0) == 0 &&
 			(Scripts?.Count ?? 0) == 0;
@@ -43,21 +44,5 @@ namespace JocysCom.Sql.Propagate
 		public string LogsBodyText { get => _LogsBodyText; set => SetProperty(ref _LogsBodyText, value); }
 		string _LogsBodyText;
 
-		#region ■ INotifyPropertyChanged
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected void SetProperty<T>(ref T property, T value, [CallerMemberName] string propertyName = null)
-		{
-			property = value;
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-		}
-
-		#endregion
 	}
 }

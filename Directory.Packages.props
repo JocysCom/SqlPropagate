@@ -1,0 +1,23 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- SQL -->
+    <PackageVersion Include="Microsoft.Data.SqlClient" Version="7.0.0" />
+    <!-- Managed SNI — bundles correctly with single-file publish (unlike the native SNI DLL) -->
+    <PackageVersion Include="Microsoft.Data.SqlClient.SNI.runtime" Version="6.0.2" />
+    <!-- Required at runtime by Microsoft.SqlServer.Management.ConnectionUI.Dialog -->
+    <PackageVersion Include="System.Data.Common" Version="4.3.0" />
+    <PackageVersion Include="System.Data.OracleClient" Version="1.0.8" />
+    <!-- Version ranges [x, y) cap packages that drop net8.0 support in their next major.
+         Remove these caps when net8.0 is no longer a target framework. -->
+    <PackageVersion Include="System.Data.OleDb" Version="[8.0.1, 9.0.0)" />
+    <PackageVersion Include="System.Data.Odbc" Version="[8.0.1, 9.0.0)" />
+    <!-- Testing -->
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageVersion Include="MSTest.TestAdapter" Version="4.1.0" />
+    <PackageVersion Include="MSTest.TestFramework" Version="4.1.0" />
+    <PackageVersion Include="System.Text.RegularExpressions" Version="4.3.1" />
+  </ItemGroup>
+</Project>

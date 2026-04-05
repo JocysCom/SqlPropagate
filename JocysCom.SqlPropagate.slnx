@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SqlPropagate/JocysCom.Sql.Propagate.csproj" />
+  <Project Path="SqlPropagate.Tests/JocysCom.Sql.Propagate.Tests.csproj" />
+</Solution>

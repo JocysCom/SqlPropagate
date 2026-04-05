@@ -1,0 +1,62 @@
+﻿<Data Version="0">
+  <Items>
+    <AppData>
+      <Enabled>false</Enabled>
+      <Connections>
+        <DataItem>
+          <Name>localhost (DEV)</Name>
+          <Value>Data Source=localhost;Integrated Security=True;Trust Server Certificate=True</Value>
+          <Order>0</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>true</IsChecked>
+        </DataItem>
+        <DataItem>
+          <Name>localhost (TEST)</Name>
+          <Value>Data Source=localhost;Integrated Security=True;Trust Server Certificate=True</Value>
+          <Order>1</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>true</IsChecked>
+        </DataItem>
+        <DataItem>
+          <Name>localhost (PROD)</Name>
+          <Value>Data Source=localhost;Integrated Security=True;Trust Server Certificate=True</Value>
+          <Order>2</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>false</IsChecked>
+        </DataItem>
+      </Connections>
+      <Parameters>
+        <DataItem>
+          <Name>$(MyParam1)</Name>
+          <Value>Value 1</Value>
+          <Order>0</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>false</IsChecked>
+        </DataItem>
+        <DataItem>
+          <Name>$(MyParam1)</Name>
+          <Value>Value 2</Value>
+          <Order>1</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>true</IsChecked>
+        </DataItem>
+      </Parameters>
+      <Scripts>
+        <DataItem>
+          <Name>Script1.sql</Name>
+          <Value>JocysCom.Sql.Propagate\Script1.sql</Value>
+          <Order>0</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>true</IsChecked>
+        </DataItem>
+        <DataItem>
+          <Name>Script2.sql</Name>
+          <Value>JocysCom.Sql.Propagate\Script2.sql</Value>
+          <Order>1</Order>
+          <StatusCode>None</StatusCode>
+          <IsChecked>true</IsChecked>
+        </DataItem>
+      </Scripts>
+    </AppData>
+  </Items>
+</Data>
