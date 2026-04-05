@@ -1,10 +1,11 @@
 ﻿using JocysCom.ClassLibrary.ComponentModel;
+using JocysCom.ClassLibrary.Configuration;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace JocysCom.Sql.Propagate
 {
-	public class AppData : JocysCom.ClassLibrary.Configuration.ISettingsItem, INotifyPropertyChanged
+	public class AppData : SettingsItem, INotifyPropertyChanged
 	{
 		public bool Enabled { get; set; }
 

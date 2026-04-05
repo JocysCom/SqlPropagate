@@ -9,8 +9,12 @@ namespace JocysCom.ClassLibrary.Controls
 	/// <summary>
 	/// Interaction logic for MessageBoxWindow.xaml
 	/// </summary>
+	/// <remarks>Make sure to set the Owner property to be disposed properly after closing.</remarks>
 	public partial class MessageBoxWindow : Window
 	{
+		/// <summary>
+		/// Make sure to set window Owner to properly dispose after closing.
+		/// </summary>
 		public MessageBoxWindow()
 		{
 			InitHelper.InitTimer(this, InitializeComponent);
@@ -19,17 +23,9 @@ namespace JocysCom.ClassLibrary.Controls
 			var owner = Application.Current?.MainWindow;
 			if (owner != null)
 			{
-				WindowStartupLocation = WindowStartupLocation.CenterOwner;
 				Owner = owner;
+				WindowStartupLocation = WindowStartupLocation.CenterOwner;
 			}
-			Loaded += MessageBoxWindow_Loaded;
-		}
-
-		private void MessageBoxWindow_Loaded(object sender, RoutedEventArgs e)
-		{
-			// Center message box window in application.
-			if (Owner == null)
-				ControlsHelper.CenterWindowOnApplication(this);
 		}
 
 		/// <summary>Displays a message box that has a message, title bar caption, button, and icon; and that accepts a default message box result, complies with the specified options, and returns a result.</summary>
@@ -48,8 +44,8 @@ namespace JocysCom.ClassLibrary.Controls
 			MessageBoxOptions options = MessageBoxOptions.None
 		)
 		{
-			var win = new MessageBoxWindow();
-			return win.ShowDialog(message, caption, button, icon, defaultResult, options);
+			var box = new MessageBoxWindow();
+			return box.ShowDialog(message, caption, button, icon, defaultResult, options);
 		}
 
 		/// <summary>Displays a message box that has a message, title bar caption, button, and icon; and that accepts a default message box result, complies with the specified options, and returns a result.</summary>
@@ -110,36 +106,69 @@ namespace JocysCom.ClassLibrary.Controls
 			LinkLabel.Visibility = Visibility.Collapsed;
 			SizeLabel.Visibility = Visibility.Visible;
 			Title = caption;
-			MessageTextBlock.Text = message;
+			MessageTextBox.Text = message;
 			_SwitchButton(button, defaultResult);
 			_SwitchIcon(icon);
 			// Set size.
-			Loaded -= MessageBoxWindow_Loaded1;
-			Loaded += MessageBoxWindow_Loaded1;
+			Loaded -= MessageBoxWindow_Loaded;
+			Loaded += MessageBoxWindow_Loaded;
 			// Update size label.
 			UpdateSizeLabel();
 			if (ControlsHelper.GetMainFormTopMost())
 				Topmost = true;
+			// Attach a new Loaded event handler specifically for focusing the message text box
+			Loaded += FocusMessageTextBox;
 			// Show form.
 			var result = ShowDialog();
+			// Clean up by removing the event handler after the dialog is closed
+			Loaded -= FocusMessageTextBox;
 			return Result;
 		}
 
-		private void MessageBoxWindow_Loaded1(object sender, RoutedEventArgs e)
+		private void FocusMessageTextBox(object sender, RoutedEventArgs e)
 		{
-			// Get text size (from 256 to 512).
-			var measureSize = Math.Min(Math.Max(256, MessageTextBlock.Text.Length), 512);
-			var measureMessage = new string('a', measureSize);
-			var size = MeasureString(measureMessage, MessageTextBlock);
-			size = ApplyAspectRatio(size);
-			var boxWidth = Math.Round(size.Width, 0);
-			var boxHeight = Math.Round(size.Height, 0);
-			// Set window size.
-			var winWidthDif = Width - MessageTextBox.ActualWidth;
-			var winHeightDif = Height - MessageTextBox.ActualHeight;
-			SizeToContent = SizeToContent.Manual;
-			Width = boxWidth + winWidthDif;
-			Height = boxHeight + winHeightDif;
+			// Set focus to the MessageTextBox control.
+			MessageTextBox.Focus();
+			// Set the caret position to the end of the text
+			MessageTextBox.CaretIndex = MessageTextBox.Text.Length;
+		}
+
+		public void SetSize(double width = 0, double height = 0)
+		{
+			if (width > 0 && height > 0)
+			{
+				SizeToContent = SizeToContent.Manual;
+				Width = width;
+				Height = height;
+			}
+			else
+			{
+				SizeToContent = SizeToContent.WidthAndHeight;
+			}
+		}
+
+		private void MessageBoxWindow_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (SizeToContent == SizeToContent.Manual)
+			{
+				ControlsHelper.CenterWindowOnApplication(this);
+			}
+			else
+			{
+				// Get text size (from 256 to 512).
+				var measureSize = Math.Min(Math.Max(256, MessageTextBlock.Text.Length), 512);
+				var measureMessage = new string('a', measureSize);
+				var size = MeasureString(measureMessage, MessageTextBlock);
+				size = ApplyAspectRatio(size);
+				var boxWidth = Math.Round(size.Width, 0);
+				var boxHeight = Math.Round(size.Height, 0);
+				// Set window size.
+				var winWidthDif = Width - MessageTextBox.ActualWidth;
+				var winHeightDif = Height - MessageTextBox.ActualHeight;
+				SizeToContent = SizeToContent.Manual;
+				Width = boxWidth + winWidthDif;
+				Height = boxHeight + winHeightDif;
+			}
 		}
 
 		void EnableButtons(MessageBoxResult r1, MessageBoxResult r2 = MessageBoxResult.None, MessageBoxResult r3 = MessageBoxResult.None)
@@ -203,6 +232,15 @@ namespace JocysCom.ClassLibrary.Controls
 					IconContent.Content = Resources["Icon_Information"];
 					break;
 			}
+		}
+
+		private void CopyMessage_Click(object sender, RoutedEventArgs e)
+		{
+			var text = MessageTextBox.Visibility == Visibility.Visible
+				? MessageTextBox.Text
+				: MessageTextBlock.Text;
+			if (!string.IsNullOrEmpty(text))
+				Clipboard.SetText(text);
 		}
 
 		private void Button_Click(object sender, RoutedEventArgs e)
@@ -280,6 +318,26 @@ namespace JocysCom.ClassLibrary.Controls
 			var text = (MessageTextBox.MaxLength - MessageTextBox.Text.Length).ToString();
 			ControlsHelper.SetText(SizeLabel, text);
 			ControlsHelper.SetVisible(SizeLabel, MessageTextBox.MaxLength > 0);
+		}
+
+		private void Window_Loaded(object sender, RoutedEventArgs e)
+		{
+			if (!ControlsHelper.AllowLoad(this))
+				return;
+			// Center message box window in application.
+			if (Owner is null)
+				ControlsHelper.CenterWindowOnApplication(this);
+		}
+
+		private void Window_Unloaded(object sender, RoutedEventArgs e)
+		{
+			if (!ControlsHelper.AllowUnload(this))
+				return;
+		}
+
+		private void Window_Closed(object sender, EventArgs e)
+		{
+			Owner = null;
 		}
 	}
 }

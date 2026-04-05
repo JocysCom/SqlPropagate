@@ -1,4 +1,5 @@
-﻿using JocysCom.ClassLibrary.Controls;
+﻿using JocysCom.ClassLibrary;
+using JocysCom.ClassLibrary.Controls;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;

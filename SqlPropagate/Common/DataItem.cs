@@ -5,7 +5,7 @@ using System.Xml.Serialization;
 
 namespace JocysCom.Sql.Propagate
 {
-	public class DataItem : ISettingsItem, INotifyPropertyChanged
+	public class DataItem : SettingsItem, INotifyPropertyChanged
 	{
 		public string Name { get => _Name; set => SetProperty(ref _Name, value); }
 		string _Name;
@@ -33,20 +33,8 @@ namespace JocysCom.Sql.Propagate
 		}
 		bool _IsChecked;
 
-		public bool IsEnabled { get => _IsEnabled; set => SetProperty(ref _IsEnabled, value); }
-		bool _IsEnabled;
-
 		[XmlIgnore]
 		public object Tag;
-
-		#region ■ ISettingsItem
-		bool ISettingsItem.Enabled { get => IsEnabled; set => IsEnabled = value; }
-
-		public bool IsEmpty =>
-			string.IsNullOrEmpty(Name) &&
-			string.IsNullOrEmpty(Value);
-
-		#endregion
 
 		#region ■ INotifyPropertyChanged
 
