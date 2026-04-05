@@ -18,44 +18,32 @@
 			<RowDefinition Height="*" />
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
-		<ToolBarPanel Grid.Row="0" HorizontalAlignment="Left" Style="{StaticResource MainToolBarPanel}">
-			<ToolBar Style="{StaticResource MainToolBar}">
-				<Label x:Name="HeaderLabel" Content="Header" />
-			</ToolBar>
-		</ToolBarPanel>
-		<ToolBarPanel Grid.Row="0" HorizontalAlignment="Right" Style="{StaticResource MainToolBarPanel}">
-			<ToolBar Style="{StaticResource MainToolBar}">
-				<Button Name="AddButton" HorizontalAlignment="Right" Style="{StaticResource ToolBarButton}">
+		<Grid Grid.Row="0" Margin="3,0,3,0">
+			<Label x:Name="HeaderLabel" HorizontalAlignment="Left" VerticalAlignment="Center" Content="Header" />
+			<StackPanel HorizontalAlignment="Right" VerticalAlignment="Center" Orientation="Horizontal">
+				<Button Name="AddButton" AutomationProperties.AutomationId="AddButton" Style="{StaticResource ToolBarButton}">
 					<StackPanel Style="{StaticResource ButtonStackPanel}">
 						<ContentControl Content="{StaticResource Icon_Add}" Style="{StaticResource ButtonContentControl}" />
-						<Label Content="Add..." Style="{StaticResource ButtonLabel}" Visibility="Collapsed" />
 					</StackPanel>
 				</Button>
-				<Button
-					Name="RemoveButton"
-					HorizontalAlignment="Right"
-					Click="RemoveButton_Click"
-					Style="{StaticResource ToolBarButton}">
+				<Button Name="RemoveButton" AutomationProperties.AutomationId="RemoveButton" Click="RemoveButton_Click" Style="{StaticResource ToolBarButton}">
 					<StackPanel Style="{StaticResource ButtonStackPanel}">
 						<ContentControl Content="{StaticResource Icon_Remove}" Style="{StaticResource ButtonContentControl}" />
-						<Label Content="Remove" Style="{StaticResource ButtonLabel}" Visibility="Collapsed" />
 					</StackPanel>
 				</Button>
-				<Button Name="EditButton" HorizontalAlignment="Right" Style="{StaticResource ToolBarButton}">
+				<Button Name="EditButton" AutomationProperties.AutomationId="EditButton" Style="{StaticResource ToolBarButton}">
 					<StackPanel Style="{StaticResource ButtonStackPanel}">
 						<ContentControl Content="{StaticResource Icon_Edit}" Style="{StaticResource ButtonContentControl}" />
-						<Label Content="Edit" Style="{StaticResource ButtonLabel}" Visibility="Collapsed" />
 					</StackPanel>
 				</Button>
-				<Button Name="ExecuteButton" HorizontalAlignment="Right" Style="{StaticResource ToolBarButton}">
+				<Button Name="ExecuteButton" AutomationProperties.AutomationId="ExecuteButton" Style="{StaticResource ToolBarButton}">
 					<StackPanel Style="{StaticResource ButtonStackPanel}">
 						<ContentControl Content="{StaticResource Icon_Play}" Style="{StaticResource ButtonContentControl}" />
 						<Label Content="Execute..." Style="{StaticResource ButtonLabel}" />
 					</StackPanel>
 				</Button>
-
-			</ToolBar>
-		</ToolBarPanel>
+			</StackPanel>
+		</Grid>
 		<StackPanel
 			Grid.Row="1"
 			HorizontalAlignment="Stretch"
@@ -64,6 +52,7 @@
 			<!--  Grid must be wrapped inside white panel in order for empty rows to have white background.  -->
 			<DataGrid
 				x:Name="MainDataGrid"
+				AutomationProperties.AutomationId="MainDataGrid"
 				Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Grid, AncestorLevel=1}}"
 				Height="Auto"
 				HorizontalAlignment="Stretch"

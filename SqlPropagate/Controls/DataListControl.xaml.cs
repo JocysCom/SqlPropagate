@@ -8,6 +8,7 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
 namespace JocysCom.Sql.Propagate.Controls
@@ -17,6 +18,9 @@ namespace JocysCom.Sql.Propagate.Controls
 	/// </summary>
 	public partial class DataListControl : UserControl
 	{
+		protected override AutomationPeer OnCreateAutomationPeer()
+			=> new FrameworkElementAutomationPeer(this);
+
 		public DataListControl()
 		{
 			InitializeComponent();
@@ -231,9 +235,7 @@ namespace JocysCom.Sql.Propagate.Controls
 		public List<DataItem> GetCheckedOrSelectedReferences(out bool containsChecked)
 		{
 			containsChecked = DataItems.Any(x => x.IsChecked);
-			var items = containsChecked
-				? DataItems.Where(x => x.IsChecked).ToList()
-				: MainDataGrid.SelectedItems.Cast<DataItem>().ToList();
+			var items = DataItems.Where(x => x.IsChecked).ToList();
 			return items;
 		}
 

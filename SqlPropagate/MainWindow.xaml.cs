@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -27,21 +28,26 @@ namespace JocysCom.Sql.Propagate
             _Arguments = new Arguments(Environment.GetCommandLineArgs());
             var autoDelayString = _Arguments.GetValue(nameof(AutoDelay), true);
             AutoDelay = RuntimeHelper.TryParse<int>(autoDelayString, AutoDelay);
-            // Use configuration from local folder.
-            var exeName = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
-            var baseName = System.IO.Path.GetFileNameWithoutExtension(exeName);
-            Global.AppData.XmlFile = new FileInfo($"{baseName}.xml");
+            // Use configuration from exe folder.
+            var exePath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
+            var exeDir = Path.GetDirectoryName(exePath);
+            var baseName = Path.GetFileNameWithoutExtension(exePath);
+            var xmlPath = Path.Combine(exeDir, baseName + ".xml");
+            Global.AppData.XmlFile = new FileInfo(xmlPath);
+            if (!File.Exists(xmlPath))
+            {
+                // Extract default config and scripts from embedded resources before first load.
+                ExtractEmbeddedResource("Data.JocysCom.Sql.Propagate.xml", baseName + ".xml");
+            }
             Global.AppData.Load();
             if (Global.AppData.Items.Count == 0)
             {
                 Global.AppData.Items.Add(new AppData());
                 Global.AppData.Save();
             }
-            if (Global.AppSettings.Connections.Count == 0)
-                AddParameter(Global.AppSettings.Connections, "localhost", "Data Source=localhost;Integrated Security=True");
-
-            if (Global.AppSettings.Parameters.Count == 0)
-                AddParameter(Global.AppSettings.Parameters, "$(MyParam1)", "MyValue1");
+            // Always extract demo scripts (won't overwrite existing).
+            ExtractEmbeddedResource("Data.Script1.sql", Path.Combine(baseName, "Script1.sql"));
+            ExtractEmbeddedResource("Data.Script2.sql", Path.Combine(baseName, "Script2.sql"));
             // Load parameters.
             foreach (var item in Global.AppSettings.Parameters)
             {
@@ -69,10 +75,28 @@ namespace JocysCom.Sql.Propagate
             ScriptsPanel.ExecuteButton.Click += ScriptPanel_ExecuteButton_Click;
             ScriptsPanel.MainDataGrid.MouseDoubleClick += ScriptsPanel_MainDataGrid_MouseDoubleClick;
             ScriptsPanel.MainDataGrid.IsReadOnly = false;
-            ControlsHelper.EnableAutoScroll(LogTextBox);
+            ControlsHelper.EnableAutoScroll(LogPanel.LogTextBox);
         }
 
         Arguments _Arguments;
+
+        /// <summary>
+        /// Extract an embedded resource to a path relative to the exe directory.
+        /// Does not overwrite existing files.
+        /// </summary>
+        void ExtractEmbeddedResource(string resourceName, string relativePath)
+        {
+            var exeDir = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName);
+            var targetPath = Path.Combine(exeDir, relativePath);
+            if (File.Exists(targetPath))
+                return;
+            var targetDir = Path.GetDirectoryName(targetPath);
+            if (!Directory.Exists(targetDir))
+                Directory.CreateDirectory(targetDir);
+            var content = ClassLibrary.Helper.FindResource<byte[]>(resourceName, Assembly.GetExecutingAssembly());
+            if (content != null)
+                File.WriteAllBytes(targetPath, content);
+        }
 
         private void ScriptsPanel_MainDataGrid_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -96,6 +120,7 @@ namespace JocysCom.Sql.Propagate
         {
             var newItem = new DataItem();
             newItem.IsEnabled = true;
+            newItem.IsChecked = true;
             var isOK = UpdateConnectionItem(newItem);
             if (isOK)
             {
@@ -112,23 +137,45 @@ namespace JocysCom.Sql.Propagate
             UpdateConnectionItem(item);
         }
 
+        /// <summary>
+        /// Reformat connection string property names with spaces to their non-spaced equivalents
+        /// so that the System.Data-based ConnectionUI dialog can parse them.
+        /// </summary>
+        static string ReformatConnectionStringForDialog(string connectionString)
+        {
+            if (string.IsNullOrEmpty(connectionString))
+                return connectionString;
+            var s = connectionString;
+            s = s.Replace("Application Intent", "ApplicationIntent");
+            s = s.Replace("Connect Retry Count", "ConnectRetryCount");
+            s = s.Replace("Connect Retry Interval", "ConnectRetryInterval");
+            s = s.Replace("Pool Blocking Period", "PoolBlockingPeriod");
+            s = s.Replace("Multiple Active Result Sets", "MultipleActiveResultSets");
+            s = s.Replace("Multiple Subnet Failover", "MultiSubnetFailover");
+            s = s.Replace("Transparent Network IP Resolution", "TransparentNetworkIPResolution");
+            s = s.Replace("Trust Server Certificate", "TrustServerCertificate");
+            return s;
+        }
+
         bool UpdateConnectionItem(DataItem item)
         {
-            var dcd = new Microsoft.Data.ConnectionUI.DataConnectionDialog();
-            //Adds all the standard supported databases
-            //DataSource.AddStandardDataSources(dcd);
-            //allows you to add data sources, if you want to specify which will be supported 
-            dcd.DataSources.Add(Microsoft.Data.ConnectionUI.DataSource.SqlDataSource);
-            dcd.SetSelectedDataProvider(Microsoft.Data.ConnectionUI.DataSource.SqlDataSource, Microsoft.Data.ConnectionUI.DataProvider.SqlDataProvider);
-            dcd.ConnectionString = item.Value;
-            Microsoft.Data.ConnectionUI.DataConnectionDialog.Show(dcd);
+            // Register Microsoft.Data.SqlClient provider so the dialog can use it.
+            if (!System.Data.Common.DbProviderFactories.GetProviderInvariantNames().Contains("Microsoft.Data.SqlClient"))
+                System.Data.Common.DbProviderFactories.RegisterFactory("Microsoft.Data.SqlClient", Microsoft.Data.SqlClient.SqlClientFactory.Instance);
+            var dcd = new Microsoft.SqlServer.Management.ConnectionUI.DataConnectionDialog();
+            dcd.DataSources.Add(Microsoft.SqlServer.Management.ConnectionUI.DataSource.SqlDataSource);
+            dcd.SelectedDataSource = Microsoft.SqlServer.Management.ConnectionUI.DataSource.SqlDataSource;
+            dcd.SelectedDataProvider = Microsoft.SqlServer.Management.ConnectionUI.DataProvider.SqlDataProvider;
+            try { dcd.ConnectionString = ReformatConnectionStringForDialog(item.Value); }
+            catch { /* ignore parse errors from new properties */ }
+            Microsoft.SqlServer.Management.ConnectionUI.DataConnectionDialog.Show(dcd);
             var isOK = dcd.DialogResult == System.Windows.Forms.DialogResult.OK;
             if (isOK)
             {
                 item.Value = dcd.ConnectionString;
                 bool isEntity;
                 var cs = item.Name = ClassLibrary.Data.SqlHelper.GetProviderConnectionString(item.Value, out isEntity);
-                var builder = new System.Data.SqlClient.SqlConnectionStringBuilder(cs);
+                var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder(cs);
                 item.Name = $"{builder.DataSource}, {builder.InitialCatalog}".Trim(' ', ',');
                 Global.AppData.Save();
             }
@@ -144,7 +191,7 @@ namespace JocysCom.Sql.Propagate
             AddParameter(Global.AppSettings.Parameters);
         }
 
-        void AddParameter(IList<DataItem> list, string name = "", string value = "", bool isChecked = false)
+        void AddParameter(IList<DataItem> list, string name = "", string value = "", bool isChecked = true)
         {
             var newItem = new DataItem();
             newItem.Name = name;
@@ -213,10 +260,40 @@ namespace JocysCom.Sql.Propagate
 
         private void ScriptPanel_ExecuteButton_Click(object sender, RoutedEventArgs e)
         {
-            Execute();
+            if (_IsExecuting)
+                CancelExecution();
+            else
+                Execute();
         }
 
         Controls.DataListControl _TaskControl;
+        bool _IsExecuting;
+        System.Threading.CancellationTokenSource _Cts;
+
+        void SetExecutingState(bool executing)
+        {
+            _IsExecuting = executing;
+            ControlsHelper.Invoke(() =>
+            {
+                var label = ScriptsPanel.ExecuteButton.Content as System.Windows.Controls.StackPanel;
+                if (label != null)
+                {
+                    var lbl = label.Children[1] as System.Windows.Controls.Label;
+                    if (lbl != null)
+                        lbl.Content = executing ? "Stop" : "Execute...";
+                    var icon = label.Children[0] as System.Windows.Controls.ContentControl;
+                    if (icon != null)
+                        icon.Content = executing
+                            ? FindResource("Icon_Cancel")
+                            : FindResource("Icon_Play");
+                }
+            });
+        }
+
+        void CancelExecution()
+        {
+            _Cts?.Cancel();
+        }
 
         void Execute(bool skipConfirmation = false)
         {
@@ -230,12 +307,12 @@ namespace JocysCom.Sql.Propagate
             var form = new MessageBoxWindow();
             if (connections.Count == 0)
             {
-                form.ShowDialog($"Please select at least on connection", "Execute", MessageBoxButton.OK, MessageBoxImage.Information);
+                form.ShowDialog($"Please check at least one connection", "Execute", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             if (scripts.Count == 0)
             {
-                form.ShowDialog($"Please select at least on script", "Execute", MessageBoxButton.OK, MessageBoxImage.Information);
+                form.ShowDialog($"Please check at least one script", "Execute", MessageBoxButton.OK, MessageBoxImage.Information);
                 return;
             }
             for (int i = 0; i < parameters.Count; i++)
@@ -266,7 +343,7 @@ namespace JocysCom.Sql.Propagate
                 if (result != MessageBoxResult.OK)
                     return;
             }
-            LogTextBox.Text = "";
+            LogPanel.Clear();
             var param = new ScriptExecutorParam()
             {
                 Connections = connections,
@@ -275,9 +352,12 @@ namespace JocysCom.Sql.Propagate
             };
             InfoPanel.AddTask(TaskId);
             _TaskControl = ScriptsPanel;
+            _Cts = new System.Threading.CancellationTokenSource();
+            SetExecutingState(true);
             var success = System.Threading.ThreadPool.QueueUserWorkItem(ExecuteTask, param);
             if (!success)
             {
+                SetExecutingState(false);
                 _TaskControl.ScanProgressPanel.UpdateProgress("Task failed!", "", true);
                 InfoPanel.RemoveTask(TaskId);
             }
@@ -293,19 +373,22 @@ namespace JocysCom.Sql.Propagate
                 _TaskControl.ScanProgressPanel.UpdateProgress("Starting...", "", true);
             });
             _ScriptExecutor = new ScriptExecutor();
+            _ScriptExecutor.CancellationToken = _Cts.Token;
             _ScriptExecutor.Progress += _ScriptExecutor_Progress;
             _ScriptExecutor.InfoMessage += _ScriptExecutor_InfoMessage;
+            _ScriptExecutor.BatchMessage += _ScriptExecutor_BatchMessage;
             var param = (ScriptExecutorParam)state;
             _ScriptExecutor.ProcessData(param);
         }
 
-        private void _ScriptExecutor_InfoMessage(object sender, System.Data.SqlClient.SqlInfoMessageEventArgs e)
+        private void _ScriptExecutor_BatchMessage(object sender, string message)
         {
-            ControlsHelper.Invoke(() =>
-            {
-                var s = $"Level {e.Errors[0].Class} Message: {e.Message}\r\n";
-                LogTextBox.Text += s;
-            });
+            LogPanel.Add(message + "\r\n");
+        }
+
+        private void _ScriptExecutor_InfoMessage(object sender, Microsoft.Data.SqlClient.SqlInfoMessageEventArgs e)
+        {
+            LogPanel.Add("Level {0} Message: {1}\r\n", e.Errors[0].Class, e.Message);
         }
 
         private void _ScriptExecutor_Progress(object sender, ProgressEventArgs e)
@@ -323,19 +406,23 @@ namespace JocysCom.Sql.Propagate
                 case ProgressStatus.Started:
                     var sm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Started...";
                     _TaskControl.ScanProgressPanel.UpdateProgress(sm, "");
-                    LogTextBox.Text += $"{sm}\r\n";
+                    LogPanel.Add("{0}\r\n", sm);
                     break;
                 case ProgressStatus.Updated:
                     _TaskControl.ScanProgressPanel.UpdateProgress(e);
                     if (!string.IsNullOrEmpty(e.SubMessage))
-                        LogTextBox.Text += $"{e.TopMessage} \\ {e.SubMessage}\r\n";
+                        LogPanel.Add("{0} \\ {1}\r\n", e.TopMessage, e.SubMessage);
                     break;
                 case ProgressStatus.Exception:
-                    LogTextBox.Text += $"{e.Exception.ToString()}\r\n";
+                    LogPanel.Add("{0}\r\n", e.Exception.ToString());
+                    SetExecutingState(false);
+                    _TaskControl.ScanProgressPanel.UpdateProgress();
+                    InfoPanel.RemoveTask(TaskId);
                     break;
                 case ProgressStatus.Completed:
                     var dm = $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - Done.";
-                    LogTextBox.Text += $"{dm}\r\n";
+                    LogPanel.Add("{0}\r\n", dm);
+                    SetExecutingState(false);
                     _TaskControl.ScanProgressPanel.UpdateProgress();
                     InfoPanel.RemoveTask(TaskId);
                     if (_Arguments.ContainsKey("AutoClose"))
@@ -357,8 +444,11 @@ namespace JocysCom.Sql.Propagate
         void LoadHelpAndInfo(bool setLog = false)
         {
             // Set log.
-            if (setLog)
-                LogTextBox.Text = Global.AppSettings.LogsBodyText;
+            if (setLog && !string.IsNullOrEmpty(Global.AppSettings.LogsBodyText))
+            {
+                LogPanel.Clear();
+                LogPanel.Add(Global.AppSettings.LogsBodyText);
+            }
             var assembly = Assembly.GetExecutingAssembly();
             // Set Help Head text
             var product = ((AssemblyProductAttribute)Attribute.GetCustomAttribute(assembly, typeof(AssemblyProductAttribute))).Product;
